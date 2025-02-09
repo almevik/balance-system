@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetTransactionsRequest;
 use App\Repositories\BalanceRepository;
 use App\Repositories\TransactionRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
@@ -26,13 +26,15 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function getTransactions(Request $request): LengthAwarePaginator
+    public function getTransactions(GetTransactionsRequest $request): LengthAwarePaginator
     {
+        $filter = $request->getFilter();
+
         return $this->transactionRepository->all(
-            auth()->id(),
-            $request->input('search'),
-            $request->input('sort', 'transaction_date'),
-            $request->input('order', 'desc')
+            $filter['user_id'],
+            $filter['search'],
+            $filter['sort'],
+            $filter['order'],
         );
     }
 }
